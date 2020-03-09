@@ -1,6 +1,6 @@
 Road Label Comparison UserInterface Python Version
 by Nok Sam Leong 
-03/08/2020s 
+03/08/2020 
 
 program path: RoadLabelComparison\Src\dist\GUI\Road Lebel Comparison.exe
 image path: RoadLabelComparison\pic
