@@ -3,12 +3,14 @@ import os
 import pandas as pd
 from pathlib import Path
 import subprocess
+import datetime
 
 class Backend:
     RLBpath = ""
     thisPy = Path(os.path.realpath(__file__))
     RLBpath = thisPy.parent.parent.parent.parent
     RLBpath = str(RLBpath)
+    key_length = 16
     current_commend = ""
     current_index = 0
     try:
@@ -24,6 +26,7 @@ class Backend:
     isNone = False  # boolean, if None is selected
 
     def get_pre(self):
+        print(self.current)
         if self.current_index >= 1:
             # check if data frame is empty and if currently looking at the first row
             # yes return empty list, otherwise the list of the previous key
@@ -32,9 +35,9 @@ class Backend:
             temp = str(pre_row[0])
             target_set = []
             for file in listdir(self.RLBpath + "\\pic"):
-                if file[0:16] == temp:
+                if file[0:self.key_length] == temp:
                     target_set.append(file)
-                elif temp < file and not file[0:16] == temp:
+                elif temp < file and not file[0:self.key_length] == temp:
                     break
                     # if saved key is smaller than current target from the loop,
                     # already passed the position where the key supposed to be and the images not in the path
@@ -55,14 +58,17 @@ class Backend:
                 self.isNone = False
                 for num in range(len(self.current)):
                     # if index of the recorded image == position num
-                    if num == self.current.index(str(pre_row[1]+".PNG")):
+                    if num == self.current.index(str(pre_row[1]+".png")):
                         self.checkboxBoo[num] = True
                     try:
-                        if len(pre_row) > 2 and num == self.current.index(str(pre_row[2] + ".PNG")):
+                        if len(pre_row) > 2 and num == self.current.index(str(pre_row[2]) + ".png"):
                             self.checkboxBoo[num] = True
                     except ValueError:
                         pass  # only one image selected
-            self.current_commend = pre_row[3]
+            if len(pre_row) > 4:
+                self.current_commend = pre_row[3]
+            else:
+                self.current_commend = ""
             return self.current
 
     # get next set of date
@@ -78,9 +84,9 @@ class Backend:
             if len(self.theList) == 0:
                 self.stopRecord = True
             else:
-                self.currentKey = self.theList[0][0:16]
+                self.currentKey = self.theList[0][0:self.key_length]
                 # put the very first set of images into current list from theList
-                while not len(self.theList) == 0 and self.theList[0][0:16] == self.currentKey:
+                while not len(self.theList) == 0 and self.theList[0][0:self.key_length] == self.currentKey:
                     self.current.append(self.theList.pop(0))
                 for file in self.current:
                     self.checkboxBoo.append(False)
@@ -136,6 +142,7 @@ class Backend:
             upper = upper.append(pd.Series([str(self.currentKey), temp[0], temp[1], comment]), ignore_index=True)
             self.frame = pd.concat([upper, lower])
             self.frame.reset_index(drop=True)
+        self.frame.applymap(str)
         self.frame.to_excel(r""+self.RLBpath + "\\result.xlsx", index=False, header=False)
 
     def get_commend(self):
@@ -156,18 +163,24 @@ class Backend:
         if not len(self.frame.index) == 0:
             for file in listdir(self.RLBpath + "\\pic"):
                 # check if the key is in the excel file already
-                if not file[0:16] in set(self.frame[0]):  # True if f is not in the frame
+                if not file[0:self.key_length] in set(self.frame[0]):  # True if f is not in the frame
                     self.theList.append(file)
         else:
             self.theList = listdir(self.RLBpath + "\\pic")
         self.current_index = len(self.frame.index)  # looking at the first empty row
 
     def __init__(self):
-        self.run()
+        try:
+            self.run()
+        except Exception as e:
+            exception = open("exception.txt","a")
+            exception.write(str(e))
+            exception.close()
+
 
     def delete_image(self):
         for file in listdir(self.RLBpath + "\\pic"):
-            if file[0:16] in set(self.frame[0]):
+            if file[0:self.key_length] in set(self.frame[0]):
                 os.remove(self.RLBpath+"\\pic\\"+file)
 
     # True if finish all data set False if there is more data set

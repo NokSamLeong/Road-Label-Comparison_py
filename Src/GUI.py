@@ -56,7 +56,7 @@ def change_status():  # restore data
 def change_label():
     for cb in range(len(checkbox_list)):
         if cb < len(current):
-            checkbox_string[cb].set(current[cb][0:28])
+            checkbox_string[cb].set(current[cb][0:-4])
         else:
             checkbox_string[cb].set("")
 
@@ -76,10 +76,11 @@ def pre_action():
             be.write_in(text_field_var.get())
         except IOError:
             mb.showerror(title="Error", message="Unable to write in result")
-    try:
-        current = be.get_pre()
-    except TypeError:
-        mb.showerror(title="fail attempt", message="type error Unable to access the previous set")
+    #try:
+    current = be.get_pre()
+    #except TypeError as e:
+       # print(e)
+    #mb.showerror(title="fail attempt", message="type error Unable to access the previous set")
     if not current:
         mb.showerror(title="fail attempt", message="Unable to access the previous set or no previous set")
     else:
