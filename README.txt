@@ -13,13 +13,12 @@ at least 1 and at most 4 different images for each key.
 Instruction
 Pressing << or >> will save your selection
 non-labeled checkbox is considered to be an invalid selection
-put images in the 'pic' file. Recommend to put less than 100 images each time.
+put images in the 'pic' file. Recommend to put less than 1000 images each time.
 Open button opens the first image in the current set
 Open button will work properly only if the default photo viewer app is Window Photo Viewer
 Maximum selection for each key is 2 labels.
 if None is selected, no labels will be marked even if they are selected.
 Do not need to delete the key string in the comment field. It is there for convenience.
-Make sure to delete the images which you already give judgment to.
 The result is saved as an Excel file.
 
 Update
